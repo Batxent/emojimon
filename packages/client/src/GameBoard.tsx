@@ -7,13 +7,14 @@ import { TerrainType, terrainTypes } from "./terrainTypes";
 import { EncounterScreen } from "./EncounterScreen";
 import { Entity, Has, getComponentValueStrict } from "@latticexyz/recs";
 import { MonsterType, monsterTypes } from "./monsterTypes";
+import { singletonEntity } from "@latticexyz/store-sync/recs";
 
 export const GameBoard = () => {
   useKeyboardMovement();
 
   const {
     components: { Encounter, MapConfig, Monster, Player, Position },
-    network: { playerEntity, singletonEntity },
+    network: { playerEntity },
     systemCalls: { spawn },
   } = useMUD();
 

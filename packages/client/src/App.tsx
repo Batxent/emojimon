@@ -1,25 +1,26 @@
 import { useComponentValue } from "@latticexyz/react";
-import { SyncState } from "@latticexyz/network";
 import { useMUD } from "./MUDContext";
 import { GameBoard } from "./GameBoard";
+import { SyncStep, singletonEntity } from "@latticexyz/store-sync/recs";
 
 export const App = () => {
   const {
-    components: { LoadingState },
-    network: { singletonEntity },
+    components: { SyncProgress },
   } = useMUD();
 
-  const loadingState = useComponentValue(LoadingState, singletonEntity, {
-    state: SyncState.CONNECTING,
-    msg: "Connecting",
+  const syncProgress = useComponentValue(SyncProgress, singletonEntity, {
+    step: SyncStep.INITIALIZE,
+    message: "Connecting",
     percentage: 0,
+    latestBlockNumber: 0n,
+    lastBlockNumberProcessed: 0n,
   });
 
   return (
     <div className="w-screen h-screen flex items-center justify-center">
-      {loadingState.state !== SyncState.LIVE ? (
+      {syncProgress.step !== SyncStep.LIVE ? (
         <div>
-          {loadingState.msg} ({Math.floor(loadingState.percentage)}%)
+          {syncProgress.message} ({Math.floor(syncProgress.percentage)}%)
         </div>
       ) : (
         <GameBoard />

@@ -3,11 +3,12 @@ import { uuid, awaitStreamValue } from "@latticexyz/utils";
 import { MonsterCatchResult } from "../monsterCatchResult";
 import { ClientComponents } from "./createClientComponents";
 import { SetupNetworkResult } from "./setupNetwork";
+import { singletonEntity } from "@latticexyz/store-sync/recs";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
-  { playerEntity, singletonEntity, worldSend, txReduced$ }: SetupNetworkResult,
+  { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
   {
     Encounter,
     MapConfig,
@@ -56,8 +57,8 @@ export function createSystemCalls(
     });
 
     try {
-      const tx = await worldSend("move", [x, y]);
-      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+      const tx = await worldContract.write.move([x, y]);
+      await waitForTransaction(tx);
     } finally {
       Position.removeOverride(positionId);
     }
@@ -105,8 +106,8 @@ export function createSystemCalls(
     });
 
     try {
-      const tx = await worldSend("spawn", [x, y]);
-      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+      const tx = await worldContract.write.spawn([x, y]);
+      await waitForTransaction(tx);
     } finally {
       Position.removeOverride(positionId);
       Player.removeOverride(playerId);
@@ -124,8 +125,8 @@ export function createSystemCalls(
       throw new Error("no encounter");
     }
 
-    const tx = await worldSend("throwBall", []);
-    await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+    const tx = await worldContract.write.throwBall();
+    await waitForTransaction(tx);
 
     const catchAttempt = getComponentValue(MonsterCatchAttempt, player);
     if (!catchAttempt) {
@@ -136,8 +137,8 @@ export function createSystemCalls(
   };
 
   const fleeEncounter = async () => {
-    const tx = await worldSend("flee", []);
-    await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+    const tx = await worldContract.write.flee();
+    await waitForTransaction(tx);
   };
 
   return {
