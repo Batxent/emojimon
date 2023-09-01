@@ -51,7 +51,6 @@ contract PostDeploy is Script {
       for (uint32 x = 0; x < width; x++) {
         TerrainType terrainType = map[y][x];
         if (terrainType == TerrainType.None) continue;
- 
         terrain[(y * width) + x] = bytes1(uint8(terrainType));
         bytes32 entity = positionToEntityKey(x, y);
         if (terrainType == TerrainType.Boulder) {

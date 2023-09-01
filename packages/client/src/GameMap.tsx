@@ -19,6 +19,7 @@ type Props = {
     entity: Entity;
   }[];
   encounter?: ReactNode;
+  chatWith?: ReactNode;
 };
 
 export const GameMap = ({
@@ -28,6 +29,7 @@ export const GameMap = ({
   terrain,
   players,
   encounter,
+  chatWith,
 }: Props) => {
   const {
     network: { playerEntity },
@@ -43,6 +45,14 @@ export const GameMap = ({
       setShowEncounter(false);
     }
   }, [encounter]);
+
+  const [showChatRoom, setShowChatRoom] = useState(false);
+  // Reset show chatWith when we leave chatRoom
+  useEffect(() => {
+    if (!chatWith) {
+      setShowChatRoom(false);
+    }
+  }, [chatWith]);
 
   return (
     <div className="inline-grid p-2 bg-lime-500 relative overflow-hidden">
@@ -83,6 +93,17 @@ export const GameMap = ({
                   }}
                 ></div>
               ) : null}
+              {chatWith && mainPlayerHere ? (
+                <div
+                  className="absolute z-10 animate-battle"
+                  style={{
+                    boxShadow: "0 0 0 100vmax black",
+                  }}
+                  onAnimationEnd={() => {
+                    setShowChatRoom(true);
+                  }}
+                ></div>
+              ) : null}
               <div className="flex flex-wrap gap-1 items-center justify-center relative">
                 {terrainEmoji ? (
                   <div className="absolute inset-0 flex items-center justify-center text-3xl pointer-events-none">
@@ -111,6 +132,20 @@ export const GameMap = ({
           }}
         >
           {encounter}
+        </div>
+      ) : null}
+
+      {chatWith && showChatRoom ? (
+        <div
+          className="relative z-10 -m-2 bg-black text-white flex items-center justify-center"
+          style={{
+            gridColumnStart: 1,
+            gridColumnEnd: width + 1,
+            gridRowStart: 1,
+            gridRowEnd: height + 1,
+          }}
+        >
+          {chatWith}
         </div>
       ) : null}
     </div>

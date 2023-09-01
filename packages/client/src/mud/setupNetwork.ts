@@ -7,6 +7,8 @@ import { Contract, Signer, utils } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
 import storeConfig from "contracts/mud.config";
+import { SOCIAL_PLUGIN_ADDRESS, SOCIAL_PLUGIN_ABI } from "../safe/sample";
+import { ethers } from "ethers";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
@@ -52,6 +54,15 @@ export async function setupNetwork() {
     setInterval(requestDrip, 20000);
   }
 
+  const balance = await signer?.getBalance();
+  console.log("balance:", balance);
+
+  const socailPlugin = new ethers.Contract(
+    SOCIAL_PLUGIN_ADDRESS,
+    SOCIAL_PLUGIN_ABI,
+    signer
+  )
+
   // Create a World contract instance
   const worldContract = IWorld__factory.connect(
     networkConfig.worldAddress,
@@ -62,8 +73,8 @@ export async function setupNetwork() {
   const fastTxExecutor =
     signer?.provider instanceof JsonRpcProvider
       ? await createFastTxExecutor(
-          signer as Signer & { provider: JsonRpcProvider }
-        )
+        signer as Signer & { provider: JsonRpcProvider }
+      )
       : null;
 
   // TODO: infer this from fastTxExecute signature?
@@ -94,5 +105,6 @@ export async function setupNetwork() {
     worldContract,
     worldSend,
     fastTxExecutor,
+    socailPlugin
   };
 }

@@ -175,5 +175,35 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    ChatWith: (() => {
+      const tableId = new TableId("", "ChatWith");
+      return defineComponent(
+        world,
+        {
+          value: RecsType.String,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
+    PlayerAtPositon: (() => {
+      const tableId = new TableId("", "PlayerAtPositon");
+      return defineComponent(
+        world,
+        {
+          value: RecsType.String,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
   };
 }

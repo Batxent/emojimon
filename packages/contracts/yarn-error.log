@@ -1,0 +1,70 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/bin/yarn
+
+PATH: 
+  /Users/tommy/Library/pnpm:/usr/local/bin:/opt/homebrew/opt/python/libexec/bin:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/lib/ruby/gems/3.1.0/bin:/opt/homebrew/opt/ruby/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Apple/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/homebrew/opt/python/libexec/bin:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/lib/ruby/gems/3.1.0/bin:/opt/homebrew/opt/ruby/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/tommy/.foundry/bin:/Users/tommy/.dojo/bin:/Users/tommy/Library/Application Support/JetBrains/Toolbox/scripts:/Users/tommy/development/flutter/bin:/Users/tommy/.pub-cache/bin:/Users/tommy/Library/Application Support/JetBrains/Toolbox/scripts:/Users/tommy/development/flutter/bin:/Users/tommy/.pub-cache/bin
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  18.16.1
+
+Platform: 
+  darwin arm64
+
+Trace: 
+  Error: ENOENT: no such file or directory, copyfile '/Users/tommy/Library/Caches/Yarn/v6/npm-has-flag-4.0.0-944771fd9c81c81265c4d6941860da06bb59479b-integrity/node_modules/has-flag/index.d.ts' -> '/Users/tommy/Documents/GitHubOpenSources/emojimon/packages/contracts/node_modules/solhint/node_modules/has-flag/index.d.ts'
+
+npm manifest: 
+  {
+    "name": "contracts",
+    "version": "0.0.0",
+    "private": true,
+    "license": "MIT",
+    "scripts": {
+      "build": "forge clean && forge build",
+      "deploy": "pnpm run initialize && mud deploy",
+      "deploy:testnet": "pnpm run initialize && mud deploy --profile=lattice-testnet",
+      "dev": "pnpm mud dev-contracts --tsgenOutput ../client/src/mud",
+      "initialize": "pnpm run tablegen && pnpm run worldgen && pnpm run build && pnpm run worldtypes && pnpm run tsgen",
+      "lint": "pnpm run prettier && pnpm run solhint",
+      "prettier": "prettier --write 'src/**/*.sol'",
+      "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
+      "tablegen": "mud tablegen",
+      "test": "tsc --noEmit && mud test",
+      "tsgen": "mud tsgen --configPath mud.config.ts --out ../client/src/mud",
+      "worldgen": "mud worldgen",
+      "worldtypes": "rimraf types && typechain --target=ethers-v5 out/IWorld.sol/IWorld.json"
+    },
+    "dependencies": {
+      "@ethersproject/abi": "^5.7.0",
+      "@ethersproject/bytes": "^5.7.0",
+      "@ethersproject/providers": "^5.7.2",
+      "@latticexyz/cli": "2.0.0-alpha.1.177",
+      "@latticexyz/schema-type": "2.0.0-alpha.1.177",
+      "@latticexyz/std-contracts": "2.0.0-alpha.1.177",
+      "@latticexyz/store": "2.0.0-alpha.1.177",
+      "@latticexyz/world": "2.0.0-alpha.1.177",
+      "ethers": "^5.7.2",
+      "@safe-global/safe-core-protocol": "0.1.0-alpha.4",
+      "@openzeppelin/contracts": "^4.3.1"
+    },
+    "devDependencies": {
+      "@typechain/ethers-v5": "^10.2.0",
+      "@types/node": "^18.15.11",
+      "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
+      "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
+      "prettier": "^2.6.2",
+      "prettier-plugin-solidity": "^1.0.0-beta.19",
+      "solhint": "^3.3.7",
+      "solhint-plugin-mud": "2.0.0-alpha.1.177",
+      "typechain": "^8.1.1"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

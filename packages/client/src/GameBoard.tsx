@@ -5,6 +5,7 @@ import { useKeyboardMovement } from "./useKeyboardMovement";
 import { hexToArray } from "@latticexyz/utils";
 import { TerrainType, terrainTypes } from "./terrainTypes";
 import { EncounterScreen } from "./EncounterScreen";
+import { ChatRoomScreen } from "./ChatRoomScreen";
 import { Entity, Has, getComponentValueStrict } from "@latticexyz/recs";
 import { MonsterType, monsterTypes } from "./monsterTypes";
 
@@ -12,7 +13,7 @@ export const GameBoard = () => {
   useKeyboardMovement();
 
   const {
-    components: { Encounter, MapConfig, Monster, Player, Position },
+    components: { Encounter, MapConfig, Monster, Player, Position, ChatWith },
     network: { playerEntity, singletonEntity },
     systemCalls: { spawn },
   } = useMUD();
@@ -44,9 +45,16 @@ export const GameBoard = () => {
     };
   });
 
+  // start here 
   const encounter = useComponentValue(Encounter, playerEntity);
   const monsterType = useComponentValue(Monster, encounter ? (encounter.monster as Entity) : undefined)?.value;
   const monster = monsterType != null && monsterType in MonsterType ? monsterTypes[monsterType as MonsterType] : null;
+
+  const chatWith = useComponentValue(ChatWith, playerEntity);
+
+  function processChatValue(value: string): string {
+    return "0x" + value.slice(26);
+  }
 
   return <GameMap
     width={width}
@@ -57,6 +65,11 @@ export const GameBoard = () => {
     encounter={
       encounter ? (
         <EncounterScreen monsterName={monster?.name ?? "MissingNo"} monsterEmoji={monster?.emoji ?? "💱"} />
+      ) : undefined
+    }
+    chatWith={
+      chatWith ? (
+        <ChatRoomScreen player={processChatValue(chatWith.value)} playerEmoji="🥸" />
       ) : undefined
     }
   />;

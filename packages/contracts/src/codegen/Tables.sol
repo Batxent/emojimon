@@ -14,3 +14,5 @@ import { EncounterTrigger, EncounterTriggerTableId } from "./tables/EncounterTri
 import { Encounterable, EncounterableTableId } from "./tables/Encounterable.sol";
 import { MonsterCatchAttempt, MonsterCatchAttemptTableId } from "./tables/MonsterCatchAttempt.sol";
 import { OwnedBy, OwnedByTableId } from "./tables/OwnedBy.sol";
+import { ChatWith, ChatWithTableId } from "./tables/ChatWith.sol";
+import { PlayerAtPositon, PlayerAtPositonTableId } from "./tables/PlayerAtPositon.sol";

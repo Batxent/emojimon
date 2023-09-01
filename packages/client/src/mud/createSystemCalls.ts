@@ -3,12 +3,13 @@ import { uuid, awaitStreamValue } from "@latticexyz/utils";
 import { MonsterCatchResult } from "../monsterCatchResult";
 import { ClientComponents } from "./createClientComponents";
 import { SetupNetworkResult } from "./setupNetwork";
+import { Bytes } from "ethers";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
-  { playerEntity, singletonEntity, worldSend, txReduced$ }: SetupNetworkResult,
-  { Encounter, MapConfig, MonsterCatchAttempt, Obstruction, Player, Position }: ClientComponents) {
+  { playerEntityId, playerEntity, singletonEntity, worldSend, txReduced$, socailPlugin }: SetupNetworkResult,
+  { Encounter, MapConfig, MonsterCatchAttempt, Obstruction, Player, Position, ChatWith }: ClientComponents) {
 
   const wrapPosition = (x: number, y: number) => {
     const mapConfig = getComponentValue(MapConfig, singletonEntity);
@@ -133,11 +134,186 @@ export function createSystemCalls(
     await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
   };
 
+  const leaveChat = async () => {
+    const player = playerEntity;
+    if (!player) {
+      throw new Error("no player");
+    }
+
+    const chater = getComponentValue(ChatWith, player);
+    if (!chater) {
+      throw new Error("no chat member");
+    }
+
+    const tx = await worldSend("leaveChat", []);
+    await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+  };
+
+  const followUser = async (following: string) => {
+    const player = playerEntityId;
+    if (!player) {
+      throw new Error("no player");
+    }
+    console.log("player: ", player);
+    await socailPlugin.follow(player, following, { gasLimit: 1000000, maxPriorityFeePerGas: 0, maxFeePerGas: 0 });
+  }
+
+  const unfollowUser = async (following: string) => {
+    const player = playerEntityId;
+    if (!player) {
+      throw new Error("no player");
+    }
+    await socailPlugin.unfollow(player, following, { gasLimit: 1000000, maxPriorityFeePerGas: 0, maxFeePerGas: 0 });
+  }
+
+  const isFollowingUser = async (following: string): Promise<boolean> => {
+    const player = playerEntityId;
+    if (!player) {
+      throw new Error("no player");
+    }
+    console.log("social plugin: ", socailPlugin);
+    return await socailPlugin.isFollowing(player, following);
+  }
+
+  const block = async (blocked: string) => {
+    const player = playerEntityId;
+    if (!player) {
+      throw new Error("no player");
+    }
+    return await socailPlugin.blockUser(player, blocked, { gasLimit: 1000000, maxPriorityFeePerGas: 0, maxFeePerGas: 0 });
+  }
+
+  const unblock = async (blocked: string) => {
+    const player = playerEntityId;
+    if (!player) {
+      throw new Error("no player");
+    }
+    return await socailPlugin.unblockUser(player, blocked, { gasLimit: 1000000, maxPriorityFeePerGas: 0, maxFeePerGas: 0 });
+  }
+
+  const isBlockedUser = async (blocked: string): Promise<boolean> => {
+    const player = playerEntityId;
+    if (!player) {
+      throw new Error("no player");
+    }
+    return await socailPlugin.isBlocked(player, blocked);
+  }
+
+  const setPermissionSetting = async (permission: number) => {
+    const player = playerEntityId;
+    if (!player) {
+      throw new Error("no player");
+    }
+    await socailPlugin.setPermission(player, permission);
+  }
+
+  const getPermissionSetting = async (): Promise<number> => {
+    const player = playerEntityId;
+    if (!player) {
+      throw new Error("no player");
+    }
+    return await socailPlugin.getPermission(player);
+  }
+
+  const canChatWithPlayer = async (receiver: string): Promise<boolean> => {
+    const player = playerEntityId;
+    if (!player) {
+      throw new Error("no player");
+    }
+    return await socailPlugin.canChat(player, receiver);
+  }
+
+  // const follow = async (following: string) => {
+  //   const player = playerEntityId;
+  //   if (!player) {
+  //     throw new Error("no player");
+  //   }
+  //   await socailPlugin.follow(player, following)
+  // }
+
+  // const unfollow = async (following: string) => {
+  //   const player = playerEntityId;
+  //   if (!player) {
+  //     throw new Error("no player");
+  //   }
+  //   await socailPlugin.unfollow(player, following)
+  // }
+
+  // const isFollowing = async (following: string): Promise<boolean> => {
+  //   const player = playerEntityId;
+  //   if (!player) {
+  //     throw new Error("no player");
+  //   }
+  //   return await socailPlugin.isFollowing(player, following);
+  // }
+
+  // const blockUser = async (blocked: string): Promise<boolean> => {
+  //   const player = playerEntityId;
+  //   if (!player) {
+  //     throw new Error("no player");
+  //   }
+  //   return await socailPlugin.blockUser(player, blocked)
+  // }
+
+  // const unblockUser = async (blocked: string): Promise<boolean> => {
+  //   const player = playerEntityId;
+  //   if (!player) {
+  //     throw new Error("no player");
+  //   }
+  //   return await socailPlugin.unblockUser(player, blocked)
+  // }
+
+  // const blockedList = async (): Promise<[string]> => {
+  //   const player = playerEntityId;
+  //   if (!player) {
+  //     throw new Error("no player");
+  //   }
+  //   return await socailPlugin.blockedList(player);
+  // }
+
+  // const isBlocked = async (blocked: string): Promise<boolean> => {
+  //   const player = playerEntityId;
+  //   if (!player) {
+  //     throw new Error("no player");
+  //   }
+  //   return await socailPlugin.isBlocked(player, blocked);
+  // }
+
+  // const setPermission = async (permission: number): Promise<boolean> => {
+  //   const player = playerEntityId;
+  //   if (!player) {
+  //     throw new Error("no player");
+  //   }
+  //   return await socailPlugin.setPermission(player, permission)
+  // }
+
+  // const getPermission = async (user: string): Promise<number> => {
+  //   return await socailPlugin.getPermission(user)
+  // }
+
+  // const canChat = async (receiver: string): Promise<boolean> => {
+  //   const player = playerEntityId;
+  //   if (!player) {
+  //     throw new Error("no player");
+  //   }
+  //   return await socailPlugin.canChat(player, receiver)
+  // }
+
   return {
     moveTo,
     moveBy,
     spawn,
     throwBall,
     fleeEncounter,
+    leaveChat,
+    followUser,
+    unfollowUser,
+    isFollowingUser,
+    block,
+    unblock,
+    isBlockedUser,
+    setPermissionSetting,
+    getPermissionSetting,
+    canChatWithPlayer,
   };
 }

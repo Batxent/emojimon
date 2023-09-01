@@ -50,5 +50,9 @@ export default mudConfig({
       },
     },
     OwnedBy: "bytes32",
+    // Social
+    ChatWith: "bytes32",
+    // position => player
+    PlayerAtPositon: "bytes32",
   },
 });
