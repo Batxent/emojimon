@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { toast } from "react-toastify";
 import { useMUD } from "./MUDContext";
+import { getMetadata } from "@latticexyz/network/src/v2/schemas/tableMetadata";
 
 type Props = {
     player: string;
@@ -11,13 +12,14 @@ type Props = {
 export const ChatRoomScreen = ({ player, playerEmoji }: Props) => {
 
     const {
-        systemCalls: { leaveChat, followUser, unfollowUser, isFollowingUser, block, unblock, isBlockedUser, setPermissionSetting, getPermissionSetting, canChatWithPlayer },
+        systemCalls: { leaveChat, followUser, unfollowUser, isFollowingUser, block, unblock, isBlockedUser, setPermissionSetting, getMetadata, canChatWithPlayer },
     } = useMUD();
 
     const [appear, setAppear] = useState(false);
     const [isFollow, setIsFollow] = useState(false);
     const [isBlocked, setIsBlocked] = useState(false);
     const [canChat, setCanChat] = useState(false);
+    const [status, setStatus] = useState('');
 
     useEffect(() => {
         // sometimes the fade-in transition doesn't play, so a timeout is a hacky fix
@@ -43,11 +45,18 @@ export const ChatRoomScreen = ({ player, playerEmoji }: Props) => {
         console.log("canChatWithPlayer: ", chat);
     }
 
+    const refreshStatus = async () => {
+        const status = await getMetadata(player);
+        setStatus(status);
+        console.log("status: ", status);
+    }
+
     useEffect(() => {
         const fetchData = async () => {
             await refreshIsFollowing();
             await refreshIsBlocked();
             await refreshCanChat();
+            await refreshStatus();
         };
         fetchData();
     }, [player]);
@@ -61,6 +70,7 @@ export const ChatRoomScreen = ({ player, playerEmoji }: Props) => {
         >
             <div className="text-8xl animate-bounce">{playerEmoji}</div>
             <div>Enter Chat with {player}!</div>
+            <div>His/Her status {status}</div>
 
             <div className="flex gap-2">
                 <button
@@ -91,13 +101,18 @@ export const ChatRoomScreen = ({ player, playerEmoji }: Props) => {
                         if (isBlocked) {
                             await unblock(player);
                             setIsBlocked(false);
+                            // TODO: 
+                            setTimeout(async () => {
+                                await refreshCanChat();
+                            }, 3000);
 
-                            await refreshCanChat();
                         } else {
                             await block(player);
                             setIsBlocked(true);
-
-                            await refreshCanChat();
+                            // TODO: 
+                            setTimeout(async () => {
+                                await refreshCanChat();
+                            }, 3000);
                         }
                     }}
                 >

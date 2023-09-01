@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { Entity } from "@latticexyz/recs";
 import { twMerge } from "tailwind-merge";
 import { useMUD } from "./MUDContext";
+import { Select } from "antd";
 
 type Props = {
   width: number;
@@ -20,6 +21,7 @@ type Props = {
   }[];
   encounter?: ReactNode;
   chatWith?: ReactNode;
+  socialPlugin?: any;
 };
 
 export const GameMap = ({
@@ -29,10 +31,11 @@ export const GameMap = ({
   terrain,
   players,
   encounter,
-  chatWith,
+  chatWith
 }: Props) => {
   const {
-    network: { playerEntity },
+    systemCalls: { setPermissionSetting, getPermissionSetting, getMetadata, setMetadata },
+    network: { playerEntity, playerEntityId, socialPlugin },
   } = useMUD();
 
   const rows = new Array(width).fill(0).map((_, i) => i);
@@ -53,6 +56,46 @@ export const GameMap = ({
       setShowChatRoom(false);
     }
   }, [chatWith]);
+
+  const [permissionSettings, setPermissionSettings] = useState(0x0);
+  useEffect(() => {
+    const fetchData = async () => {
+      const setting = await getPermissionSetting();
+      setPermissionSettings(setting);
+    };
+    fetchData();
+  }, [permissionSettings]);
+
+  const [metadata, setTheMetadata] = useState('normal');
+  useEffect(() => {
+    const fetchData = async () => {
+      const player = playerEntityId;
+      if (!player) {
+        throw new Error("no player");
+      }
+      const result = await getMetadata(player);
+      setTheMetadata(result);
+    };
+    fetchData();
+  }, [metadata]);
+
+  const handleChange = async (value: number) => {
+    console.log(`selected ${value}`);
+    const player = playerEntityId;
+    if (!player) {
+      throw new Error("no player");
+    }
+    await setPermissionSetting(value);
+  };
+
+  const handleMetadataChange = async (value: string) => {
+    console.log(`selected ${value}`);
+    const player = playerEntityId;
+    if (!player) {
+      throw new Error("no player");
+    }
+    await setMetadata(value);
+  };
 
   return (
     <div className="inline-grid p-2 bg-lime-500 relative overflow-hidden">
@@ -148,6 +191,48 @@ export const GameMap = ({
           {chatWith}
         </div>
       ) : null}
-    </div>
+
+      <div style={{
+        display: 'flex',
+        position: 'fixed',
+        top: 16,
+        right: 16,
+      }}>
+        <Select
+          defaultValue={metadata}
+          style={{ width: 200 }}
+          onChange={handleMetadataChange}
+          options={[
+            {
+              label: 'Status',
+              options: [
+                { label: 'Normal', value: 'Normal' },
+                { label: 'Focus', value: 'Focus' },
+                { label: 'Do not disturb', value: 'Do not disturb' },
+              ],
+            },
+          ]}
+        />
+        <div
+        >
+          <Select
+            defaultValue={permissionSettings}
+            style={{ width: 200 }}
+            onChange={handleChange}
+            options={[
+              {
+                label: 'Chat Permission Settings',
+                options: [
+                  { label: 'Public', value: 0x0 },
+                  { label: 'Follower', value: 0x1 },
+                  { label: 'Following', value: 0x2 },
+                  { label: 'Friend', value: 0x3 },
+                ],
+              },
+            ]}
+          />
+        </div>
+      </div>
+    </div >
   );
 };

@@ -8,7 +8,8 @@ import { getNetworkConfig } from "../mud/getNetworkConfig";
 // 0x12B4Ef1123820ff2CFD389E19887d2E5E08C9bff
 // 0xf1aF0298DcFCE09926D114Aa454A82E4784A89F0
 // 0x87BB35e90134Ce45aF80EB1DFAe75854320f9794
-export const SOCIAL_PLUGIN_ADDRESS = "0x87BB35e90134Ce45aF80EB1DFAe75854320f9794"
+// 0x1832A8533cBD5E769483d62825e5a249033fA6dc
+export const SOCIAL_PLUGIN_ADDRESS = "0x1832A8533cBD5E769483d62825e5a249033fA6dc"
 export const SOCIAL_PLUGIN_ABI = [
     "function follow(address _follower, address _following) external returns (bool)",
     "function unfollow(address _follower, address _following) external returns (bool)",
@@ -18,5 +19,7 @@ export const SOCIAL_PLUGIN_ABI = [
     "function isBlocked(address _blocker, address _blocked) external view returns (bool)",
     "function setPermission(address _user, uint32 _permission) external returns (bool)",
     "function getPermission(address _user) external view returns (uint32)",
-    "function canChat(address _sender, address _receiver) external view returns (bool)"
+    "function canChat(address _sender, address _receiver) external view returns (bool)",
+    "function setMetadata(address _user, bytes32 _metadata) external returns (bool)",
+    "function getMetadata(address _user) external view returns (bytes32)"
 ]

@@ -18,3 +18,5 @@ gas_price = 0
 block_base_fee_per_gas = 0
 [profile.lattice-testnet]
 eth_rpc_url = "https://follower.testnet-chain.linfra.xyz"
+[profile.sepolia]
+eth_rpc_url = "https://sepolia.infura.io/v3/724355a95cff43869434401fd2c7c17d"

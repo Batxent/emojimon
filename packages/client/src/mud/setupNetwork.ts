@@ -57,7 +57,7 @@ export async function setupNetwork() {
   const balance = await signer?.getBalance();
   console.log("balance:", balance);
 
-  const socailPlugin = new ethers.Contract(
+  const socialPlugin = new ethers.Contract(
     SOCIAL_PLUGIN_ADDRESS,
     SOCIAL_PLUGIN_ABI,
     signer
@@ -105,6 +105,6 @@ export async function setupNetwork() {
     worldContract,
     worldSend,
     fastTxExecutor,
-    socailPlugin
+    socialPlugin
   };
 }

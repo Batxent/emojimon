@@ -3,12 +3,12 @@ import { uuid, awaitStreamValue } from "@latticexyz/utils";
 import { MonsterCatchResult } from "../monsterCatchResult";
 import { ClientComponents } from "./createClientComponents";
 import { SetupNetworkResult } from "./setupNetwork";
-import { Bytes } from "ethers";
+import { ethers } from "ethers";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
-  { playerEntityId, playerEntity, singletonEntity, worldSend, txReduced$, socailPlugin }: SetupNetworkResult,
+  { playerEntityId, playerEntity, singletonEntity, worldSend, txReduced$, socialPlugin }: SetupNetworkResult,
   { Encounter, MapConfig, MonsterCatchAttempt, Obstruction, Player, Position, ChatWith }: ClientComponents) {
 
   const wrapPosition = (x: number, y: number) => {
@@ -154,8 +154,7 @@ export function createSystemCalls(
     if (!player) {
       throw new Error("no player");
     }
-    console.log("player: ", player);
-    await socailPlugin.follow(player, following, { gasLimit: 1000000, maxPriorityFeePerGas: 0, maxFeePerGas: 0 });
+    await socialPlugin.follow(player, following, { gasLimit: 1000000, maxPriorityFeePerGas: 0, maxFeePerGas: 0 });
   }
 
   const unfollowUser = async (following: string) => {
@@ -163,7 +162,7 @@ export function createSystemCalls(
     if (!player) {
       throw new Error("no player");
     }
-    await socailPlugin.unfollow(player, following, { gasLimit: 1000000, maxPriorityFeePerGas: 0, maxFeePerGas: 0 });
+    await socialPlugin.unfollow(player, following, { gasLimit: 1000000, maxPriorityFeePerGas: 0, maxFeePerGas: 0 });
   }
 
   const isFollowingUser = async (following: string): Promise<boolean> => {
@@ -171,8 +170,8 @@ export function createSystemCalls(
     if (!player) {
       throw new Error("no player");
     }
-    console.log("social plugin: ", socailPlugin);
-    return await socailPlugin.isFollowing(player, following);
+    console.log("social plugin: ", socialPlugin);
+    return await socialPlugin.isFollowing(player, following);
   }
 
   const block = async (blocked: string) => {
@@ -180,7 +179,7 @@ export function createSystemCalls(
     if (!player) {
       throw new Error("no player");
     }
-    return await socailPlugin.blockUser(player, blocked, { gasLimit: 1000000, maxPriorityFeePerGas: 0, maxFeePerGas: 0 });
+    await socialPlugin.blockUser(player, blocked, { gasLimit: 1000000, maxPriorityFeePerGas: 0, maxFeePerGas: 0 });
   }
 
   const unblock = async (blocked: string) => {
@@ -188,7 +187,7 @@ export function createSystemCalls(
     if (!player) {
       throw new Error("no player");
     }
-    return await socailPlugin.unblockUser(player, blocked, { gasLimit: 1000000, maxPriorityFeePerGas: 0, maxFeePerGas: 0 });
+    await socialPlugin.unblockUser(player, blocked, { gasLimit: 1000000, maxPriorityFeePerGas: 0, maxFeePerGas: 0 });
   }
 
   const isBlockedUser = async (blocked: string): Promise<boolean> => {
@@ -196,7 +195,7 @@ export function createSystemCalls(
     if (!player) {
       throw new Error("no player");
     }
-    return await socailPlugin.isBlocked(player, blocked);
+    return await socialPlugin.isBlocked(player, blocked);
   }
 
   const setPermissionSetting = async (permission: number) => {
@@ -204,7 +203,7 @@ export function createSystemCalls(
     if (!player) {
       throw new Error("no player");
     }
-    await socailPlugin.setPermission(player, permission);
+    await socialPlugin.setPermission(player, permission, { gasLimit: 1000000, maxPriorityFeePerGas: 0, maxFeePerGas: 0 });
   }
 
   const getPermissionSetting = async (): Promise<number> => {
@@ -212,7 +211,7 @@ export function createSystemCalls(
     if (!player) {
       throw new Error("no player");
     }
-    return await socailPlugin.getPermission(player);
+    return await socialPlugin.getPermission(player);
   }
 
   const canChatWithPlayer = async (receiver: string): Promise<boolean> => {
@@ -220,84 +219,26 @@ export function createSystemCalls(
     if (!player) {
       throw new Error("no player");
     }
-    return await socailPlugin.canChat(player, receiver);
+    return await socialPlugin.canChat(player, receiver);
   }
 
-  // const follow = async (following: string) => {
-  //   const player = playerEntityId;
-  //   if (!player) {
-  //     throw new Error("no player");
-  //   }
-  //   await socailPlugin.follow(player, following)
-  // }
+  // set do not disturb mode 
+  const setMetadata = async (metadata: string) => {
+    const player = playerEntityId;
+    if (!player) {
+      throw new Error("no player");
+    }
+    const result = ethers.utils.formatBytes32String(metadata);
+    console.log("setMetadata", result);
+    await socialPlugin.setMetadata(player, result, { gasLimit: 1000000, maxPriorityFeePerGas: 0, maxFeePerGas: 0 });
+  }
 
-  // const unfollow = async (following: string) => {
-  //   const player = playerEntityId;
-  //   if (!player) {
-  //     throw new Error("no player");
-  //   }
-  //   await socailPlugin.unfollow(player, following)
-  // }
-
-  // const isFollowing = async (following: string): Promise<boolean> => {
-  //   const player = playerEntityId;
-  //   if (!player) {
-  //     throw new Error("no player");
-  //   }
-  //   return await socailPlugin.isFollowing(player, following);
-  // }
-
-  // const blockUser = async (blocked: string): Promise<boolean> => {
-  //   const player = playerEntityId;
-  //   if (!player) {
-  //     throw new Error("no player");
-  //   }
-  //   return await socailPlugin.blockUser(player, blocked)
-  // }
-
-  // const unblockUser = async (blocked: string): Promise<boolean> => {
-  //   const player = playerEntityId;
-  //   if (!player) {
-  //     throw new Error("no player");
-  //   }
-  //   return await socailPlugin.unblockUser(player, blocked)
-  // }
-
-  // const blockedList = async (): Promise<[string]> => {
-  //   const player = playerEntityId;
-  //   if (!player) {
-  //     throw new Error("no player");
-  //   }
-  //   return await socailPlugin.blockedList(player);
-  // }
-
-  // const isBlocked = async (blocked: string): Promise<boolean> => {
-  //   const player = playerEntityId;
-  //   if (!player) {
-  //     throw new Error("no player");
-  //   }
-  //   return await socailPlugin.isBlocked(player, blocked);
-  // }
-
-  // const setPermission = async (permission: number): Promise<boolean> => {
-  //   const player = playerEntityId;
-  //   if (!player) {
-  //     throw new Error("no player");
-  //   }
-  //   return await socailPlugin.setPermission(player, permission)
-  // }
-
-  // const getPermission = async (user: string): Promise<number> => {
-  //   return await socailPlugin.getPermission(user)
-  // }
-
-  // const canChat = async (receiver: string): Promise<boolean> => {
-  //   const player = playerEntityId;
-  //   if (!player) {
-  //     throw new Error("no player");
-  //   }
-  //   return await socailPlugin.canChat(player, receiver)
-  // }
+  const getMetadata = async (player: String): Promise<string> => {
+    const bytes = await socialPlugin.getMetadata(player);
+    const result = ethers.utils.parseBytes32String(bytes);
+    console.log("getMetadata", result);
+    return result;
+  }
 
   return {
     moveTo,
@@ -315,5 +256,7 @@ export function createSystemCalls(
     setPermissionSetting,
     getPermissionSetting,
     canChatWithPlayer,
+    setMetadata,
+    getMetadata
   };
 }
